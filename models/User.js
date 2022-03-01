@@ -5,30 +5,28 @@ const UserSchema = new Schema(
   {
     userName: {
       type: String,
-      required: true,
+      unique: true,
+      required: 'User name is required',
       trim: true
     },
-    createdBy: {
+    email: {
       type: String,
-      required: true,
-      trim: true
+      unique: true,
+      required: 'Email address is required',
+      // validate: [validateEmail, 'Please fill a valid email address'],
+      // match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
+
     },
     createdAt: {
       type: Date,
       default: Date.now,
       get: createdAtVal => dateFormat(createdAtVal)
-    },
-    size: {
-      type: String,
-      required: true,
-      enum: ['Personal', 'Small', 'Medium', 'Large', 'Extra Large'],
-      default: 'Large'
-    },
+    },  
     toppings: [],
-    comments: [
+    thoughts: [
       {
         type: Schema.Types.ObjectId,
-        ref: 'Comment'
+        ref: 'Thought'
       }
     ]
   },
@@ -42,10 +40,10 @@ const UserSchema = new Schema(
   }
 );
 
-// get total count of comments and replies on retrieval
-UserSchema.virtual('commentCount').get(function() {
-  return this.comments.reduce(
-    (total, comment) => total + comment.replies.length + 1,
+// get total count of thoughts and replies on retrieval
+UserSchema.virtual('thoughtCount').get(function() {
+  return this.thoughts.reduce(
+    (total, thought) => total + thought.replies.length + 1,
     0
   );
 });
