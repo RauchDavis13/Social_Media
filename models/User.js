@@ -1,5 +1,31 @@
 const { Schema, model } = require('mongoose');
-const dateFormat = require('../utils/dateFormat');
+
+// const FriendSchema = new Schema(
+//   {
+//     // set custom id to avoid confusion with parent userId
+//     friendId: {
+//       type: Schema.Types.ObjectId,
+//       default: () => new Types.ObjectId()
+//     },
+//     friendName: {
+//       type: String,
+//       required: true
+//     },
+//     createdAt: {
+//       type: Date,
+//       default: Date.now,
+//       get: createdAtVal => dateFormat(createdAtVal)
+//     }
+//   },
+//   {
+//     toJSON: {
+//       getters: true
+//     }
+//   }
+// );
+
+
+
 
 const UserSchema = new Schema(
   {
@@ -13,22 +39,23 @@ const UserSchema = new Schema(
       type: String,
       unique: true,
       required: 'Email address is required',
-      // validate: [validateEmail, 'Please fill a valid email address'],
-      // match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
+      match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
 
     },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-      get: createdAtVal => dateFormat(createdAtVal)
-    },  
-    toppings: [],
+  
     thoughts: [
       {
         type: Schema.Types.ObjectId,
         ref: 'Thought'
       }
-    ]
+    ],
+    friends: [
+      // FriendSchema
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+      }
+    ],
   },
   {
     toJSON: {
@@ -40,12 +67,9 @@ const UserSchema = new Schema(
   }
 );
 
-// get total count of thoughts and replies on retrieval
-UserSchema.virtual('thoughtCount').get(function() {
-  return this.thoughts.reduce(
-    (total, thought) => total + thought.replies.length + 1,
-    0
-  );
+// get total count of friends
+UserSchema.virtual('friendCount').get(function() {
+  return this.friends.length;
 });
 
 const User = model('User', UserSchema);
