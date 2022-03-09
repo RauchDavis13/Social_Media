@@ -69,13 +69,13 @@ const userController = {
     console.log('add friend');
     User.findOneAndUpdate(  
       { _id: params.userId },
-      { $push: { friends: _id } },
+      { $addToSet: { friends: params.friendId } },
       { new: true, runValidators: true }
     )
-    .populate({
-      path: 'user',
-      select: '-__v'
-    })
+    // .populate({
+    //   path: 'user',
+    //   select: '-__v'
+    // })
       .then(dbUserData => {
         if (!dbUserData) {
           res.status(404).json({ message: 'No user found with this id!' });
